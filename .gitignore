@@ -1,0 +1,4 @@
+*.exe
+*.pcap
+.vscode/*
+
