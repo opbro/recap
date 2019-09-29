@@ -7,12 +7,14 @@ import (
 	"github.com/google/gopacket/pcap"
 )
 
+//PcapSummary Holds summary information from parsing a .pcaps
 type PcapSummary struct {
 	l2flows map[string]string
 	l3flows map[string]string
 	macToip map[string]map[string]bool
 }
 
+//NewPcapSummary initializes a PcapSummary with empty maps
 func NewPcapSummary() *PcapSummary {
 	var tmp PcapSummary
 	tmp.l2flows = make(map[string]string)
@@ -28,6 +30,7 @@ func (summary PcapSummary) sumLinkLayer(linkLayer gopacket.LinkLayer) {
 		dest := linkLayer.LinkFlow().Dst().String()
 		if summary.l2flows[src] == "" {
 			summary.l2flows[src] = dest
+			log.Println("New Link", src, dest)
 		}
 	}
 }
@@ -43,7 +46,7 @@ func (summary PcapSummary) sumNetworkLayer(networkLayer gopacket.NetworkLayer) {
 
 }
 
-func (summary PcapSummary) sumMacToIp(linkLayer gopacket.LinkLayer, networkLayer gopacket.NetworkLayer) {
+func (summary PcapSummary) sumMacToIP(linkLayer gopacket.LinkLayer, networkLayer gopacket.NetworkLayer) {
 
 	if networkLayer != nil && linkLayer != nil {
 		ip := networkLayer.NetworkFlow().Dst().String()
@@ -56,6 +59,7 @@ func (summary PcapSummary) sumMacToIp(linkLayer gopacket.LinkLayer, networkLayer
 
 }
 
+//ProcessFile will summarize a pcap and add/update its results to the current PcapSummary
 func (summary PcapSummary) ProcessFile(filename string) {
 	log.Println("Trying to open: ", filename)
 	if handle, err := pcap.OpenOffline(filename); err != nil {
@@ -67,7 +71,7 @@ func (summary PcapSummary) ProcessFile(filename string) {
 			networkLayer := packet.NetworkLayer()
 			summary.sumLinkLayer(linkLayer)
 			summary.sumNetworkLayer(networkLayer)
-			summary.sumMacToIp(linkLayer, networkLayer)
+			summary.sumMacToIP(linkLayer, networkLayer)
 		}
 	}
 }

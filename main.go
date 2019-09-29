@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/opbro/recap/pcapsummary"
 	"log"
+
 	"github.com/opbro/recap/pcapsummary"
 )
 
