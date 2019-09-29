@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/opbro/recap/pcapsummary"
 	"log"
 	"github.com/opbro/recap/pcapsummary"
 )
@@ -8,7 +9,7 @@ import (
 func main() {
 	log.Println("Main Method")
 	var filename string = "pcaps/second_one.pcap"
-	summary := pcapsummary.PcapSummary()
+	summary := pcapsummary.NewPcapSummary()
 	summary.ProcessFile(filename)
 	log.Println("Finished.")
 }
