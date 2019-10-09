@@ -40,6 +40,7 @@ func (summary PcapSummary) sumNetworkLayer(networkLayer gopacket.NetworkLayer) {
 		src := networkLayer.NetworkFlow().Src().String()
 		dest := networkLayer.NetworkFlow().Dst().String()
 		if summary.l3flows[src] == "" {
+			log.Println("New Flow", src, dest)
 			summary.l3flows[src] = dest
 		}
 	}
@@ -66,12 +67,15 @@ func (summary PcapSummary) ProcessFile(filename string) {
 		log.Fatal(err)
 	} else {
 		packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+		count := 0
 		for packet := range packetSource.Packets() {
 			linkLayer := packet.LinkLayer()
 			networkLayer := packet.NetworkLayer()
 			summary.sumLinkLayer(linkLayer)
 			summary.sumNetworkLayer(networkLayer)
 			summary.sumMacToIP(linkLayer, networkLayer)
+			count++
 		}
+		log.Println("Packets processed: ", count)
 	}
 }

@@ -4,6 +4,11 @@ The goal of this project will be as a learning experience
 
 Trying to learn the following tech stack  
 
+
+Dependancy for Ubuntu
+ * libpcap-dev
+
+Progress
  * golang (working)
  * mysql (null)
  * elastic (null)
