@@ -2,7 +2,8 @@ package pcapsummary
 
 import (
 	"log"
-
+        "math"
+	"time"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
 )
@@ -30,7 +31,6 @@ func (summary PcapSummary) sumLinkLayer(linkLayer gopacket.LinkLayer) {
 		dest := linkLayer.LinkFlow().Dst().String()
 		if summary.l2flows[src] == "" {
 			summary.l2flows[src] = dest
-			log.Println("New Link", src, dest)
 		}
 	}
 }
@@ -40,7 +40,6 @@ func (summary PcapSummary) sumNetworkLayer(networkLayer gopacket.NetworkLayer) {
 		src := networkLayer.NetworkFlow().Src().String()
 		dest := networkLayer.NetworkFlow().Dst().String()
 		if summary.l3flows[src] == "" {
-			log.Println("New Flow", src, dest)
 			summary.l3flows[src] = dest
 		}
 	}
@@ -68,14 +67,21 @@ func (summary PcapSummary) ProcessFile(filename string) {
 	} else {
 		packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 		count := 0
+		start := time.Now()
 		for packet := range packetSource.Packets() {
+			incrementalStart := time.Now()
 			linkLayer := packet.LinkLayer()
 			networkLayer := packet.NetworkLayer()
 			summary.sumLinkLayer(linkLayer)
 			summary.sumNetworkLayer(networkLayer)
 			summary.sumMacToIP(linkLayer, networkLayer)
 			count++
+			if math.Mod(float64(count), 200000) == 0 {
+				incrementalElapsed := time.Since(incrementalStart)
+				log.Println("Proccessed ", count, " packets in ", incrementalElapsed, " seconds")
+			}
 		}
-		log.Println("Packets processed: ", count)
+		elapsed := time.Since(start)
+		log.Println("Total Packets processed: ", count, " in ", elapsed, " seconds")
 	}
 }
