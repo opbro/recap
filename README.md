@@ -10,7 +10,7 @@ Dependancy for Ubuntu
 
 Progress
  * golang (working)
- * mysql (null)
+ * sqlite3 (null)
  * elastic (null)
  * frontend development in terms of displaying a network graph (null)
  * some graph database (null)
